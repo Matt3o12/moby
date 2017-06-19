@@ -321,7 +321,6 @@ func getConflictFreeConfiguration(configFile string, flags *pflag.FlagSet) (*Con
 		}
 
 		configSet := configValuesSet(jsonConfig)
-
 		if err := findConfigurationConflicts(configSet, flags); err != nil {
 			return nil, err
 		}
@@ -381,7 +380,8 @@ func getConflictFreeConfiguration(configFile string, flags *pflag.FlagSet) (*Con
 func configValuesSet(config map[string]interface{}) map[string]interface{} {
 	flatten := make(map[string]interface{})
 	for k, v := range config {
-		if m, isMap := v.(map[string]interface{}); isMap && !flatOptions[k] {
+		m, isMap := v.(map[string]interface{})
+		if isMap && !flatOptions[k] && len(m) > 0 {
 			for km, vm := range m {
 				flatten[km] = vm
 			}
@@ -390,6 +390,7 @@ func configValuesSet(config map[string]interface{}) map[string]interface{} {
 
 		flatten[k] = v
 	}
+
 	return flatten
 }
 
